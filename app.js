@@ -5,23 +5,22 @@ const app = express();
 app.use(express.json());
 
 const saltRounds = 10;
-const hashArray = [];
+let hashedPassword;
 const raw = "ReskillAmericans123";
 
 bcrypt.genSalt(saltRounds, (err, salt) => {
-  const hash = bcrypt.hash(raw, salt, (err, hash) => {
-    hashArray.push(hash);
-    console.log(hashArray);
+  bcrypt.hash(raw, salt, (err, hash) => {
+    hashedPassword = hash;
   });
 });
+
 app.post("/pass", (req, res) => {
-  const myHash = hashArray.find[0];
   const request = req.body.pass;
-  bcrypt.compare(request, myHash, (err, result) => {
+  bcrypt.compare(request, hashedPassword, (err, result) => {
     if (err) {
-      console.log(err);
+      return res.status(500).json({ err });
     }
-    console.log(result);
+    return res.status(200).json({ result });
   });
 });
 
